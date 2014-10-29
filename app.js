@@ -39,7 +39,7 @@ function Sphere(center, radius) {
   this.center = center;
   this.radius = radius;
 
-  this.getIntersections = function(vector) {
+  this.isIntersecting = function(vector) {
     var i = vector.direction.x - vector.origin.x;
     var j = vector.direction.y - vector.origin.y;
     var k = vector.direction.z - vector.origin.z;
@@ -58,23 +58,16 @@ function Sphere(center, radius) {
     var delta = Math.sqrt(Math.pow(b, 2) - (4 * a * c));
 
     if (isNaN(delta)) {
-      return null;
+      return false;
     }
 
     var val1 = (-b + delta) / (2 * a);
     var val2 = (-b - delta) / (2 * a);
-    var result = [];
 
-    if(val1 > 0) {
+    if (val1 > 0 || val2 > 0) {
       return true;
-      //result.push(new Point(Math.floor(vector.origin.x + (vector.direction.x - vector.origin.x) * val1), Math.floor(vector.origin.y + (vector.direction.y - vector.origin.y) * val1), Math.floor(vector.origin.z + (vector.direction.z - vector.origin.z) * val1)));
-    }
-    if(val2 > 0) {
-      return true;
-      //result.push(new Point(Math.floor(vector.origin.x + (vector.direction.x - vector.origin.x) * val2), Math.floor(vector.origin.y + (vector.direction.y - vector.origin.y) * val2), Math.floor(vector.origin.z + (vector.direction.z - vector.origin.z) * val2)));
     }
 
-    // return result;
   };
 }
 
@@ -98,8 +91,7 @@ var canvas = document.getElementById("canvas").getContext('2d');
 
 for (var x = 0; x < camera.length; x++) {
   for (var y = 0; y < camera.length; y++) {
-    var intersections = sphere.getIntersections(camera[x][y]);
-    if (intersections) {
+    if (sphere.isIntersecting(camera[x][y])) {
       canvas.fillRect(camera[x][y].direction.x, camera[x][y].direction.y,
       (camera[x][y].direction.x)+1, (camera[x][y].direction.y)+1);
     }
