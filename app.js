@@ -20,19 +20,11 @@ function Point(x, y, z) {
       this.z * value
     );
   };
-
-  this.distance = function(p) {
-    var squareDiffX = Math.pow(this.x - p.x, 2);
-    var squareDiffY = Math.pow(this.y - p.y, 2);
-    var squareDiffZ = Math.pow(this.z - p.z, 2);
-
-    return Math.sqrt(squareDiffX + squareDiffY + squareDiffZ);
-  };
 }
 
-function Vector(origin, direction) {
-  this.origin = origin;
-  this.direction = direction;
+function Vector(camera, pixel) {
+  this.origin = camera;
+  this.direction = pixel.minus(camera);
 }
 
 function Sphere(center, radius) {
@@ -68,17 +60,20 @@ function Sphere(center, radius) {
       return true;
     }
 
+    return false;
+
   };
 }
 
 var createCamera = function(width) {
   var camera = [];
+  var gridDistance = 1000000;
 
   for (var i = 0; i < width; i++) {
     camera[i] = [];
     for (var j = 0; j < width; j++) {
-      var origin = new Point(0, 0, 0);
-      var direction = new Point(i/width, j/width, 1).times(500);
+      var origin = new Point(width/2, width/2, 0);
+      var direction = new Point(i, j, gridDistance);
       camera[i][j] = new Vector(origin, direction);
     }
   }
@@ -86,14 +81,16 @@ var createCamera = function(width) {
 };
 
 var camera = createCamera(500);
-var sphere = new Sphere(new Point(10, 10, 10), 10);
+var sphere = new Sphere(new Point(50, 50, 1000050), 50);
 var canvas = document.getElementById("canvas").getContext('2d');
 
 for (var x = 0; x < camera.length; x++) {
   for (var y = 0; y < camera.length; y++) {
     if (sphere.isIntersecting(camera[x][y])) {
-      canvas.fillRect(camera[x][y].direction.x, camera[x][y].direction.y,
-      (camera[x][y].direction.x)+1, (camera[x][y].direction.y)+1);
+      var x = camera[x][y].direction.x;
+      var y = camera[x][y].direction.y;
+      canvas.fillRect(x,   100 - y,
+                      x+1, 100 - (y+1));
     }
   }
 }
